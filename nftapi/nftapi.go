@@ -13,6 +13,7 @@ import "C"
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"math/rand"
 	"nftserver/protocol"
 	"os"
@@ -24,6 +25,7 @@ import (
 )
 
 func Ntransfer(req *protocol.NFTParamReq) protocol.NFTParamRet {
+
 	ret := protocol.NFTParamRet{}
 
 	//cstr_filepath := C.CString(fmt.Sprintf("%s/%s", os.Getenv("NFTFILEPATH"), req.FilePath))
@@ -61,7 +63,11 @@ func Ntransfer(req *protocol.NFTParamReq) protocol.NFTParamRet {
 	cstr_filepath := C.CString(msg)
 
 	defer C.free(unsafe.Pointer(cstr_filepath))
-
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("meet panic: ", r)
+		}
+	}()
 	r := C.ntransfer(cstr_filepath, cstr_routemode, cstr_routerid, cstr_direction,
 		cstr_apptype, cstr_filemode, cstr_usermsg,
 		(*C.char)(unsafe.Pointer(&tsfid[0])),

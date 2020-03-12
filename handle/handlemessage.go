@@ -145,10 +145,23 @@ func SendMessage(conn net.Conn, ver []byte, data []byte) {
 	p.Crc32 = crc32.ChecksumIEEE(p.Data)
 	p.Length = uint32(len(p.Data))
 
-	binary.Write(conn, binary.BigEndian, p.Ver)
-	binary.Write(conn, binary.BigEndian, &p.Length)
-	binary.Write(conn, binary.BigEndian, &p.Crc32)
-	binary.Write(conn, binary.BigEndian, p.Data)
+	err := binary.Write(conn, binary.BigEndian, p.Ver)
+	if err != nil {
+		log.Println("[ERROR] cannot write ver" + err.Error())
+	}
+
+	err = binary.Write(conn, binary.BigEndian, &p.Length)
+	if err != nil {
+		log.Println("[ERROR] cannot write length" + err.Error())
+	}
+	err = binary.Write(conn, binary.BigEndian, &p.Crc32)
+	if err != nil {
+		log.Println("[ERROR] cannot write crc32" + err.Error())
+	}
+	err = binary.Write(conn, binary.BigEndian, p.Data)
+	if err != nil {
+		log.Println("[ERROR] cannot write data" + err.Error())
+	}
 
 }
 
